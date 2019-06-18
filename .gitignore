@@ -1,0 +1,17 @@
+.idea
+.vscode
+frontend/dist
+node_modules
+*.swp
+cmd/dist
+dist/
+bin/
+generator
+*.log
+vendor/
+*.tar.gz
+*.gz
+.env
+
+shop-admin
+shop-admin.tar.gz

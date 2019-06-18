@@ -1,0 +1,32 @@
+workspace:
+    base: /root/go
+    path: src/projectname
+
+pipeline:
+    build:
+        image: golang:1.12.4 # 指定构建镜像
+        environment:
+            - GO111MODULE=on
+            - GOPROXY=https://goproxy.io
+            - SSH_ARGS=-p 22 -o StrictHostKeyChecking=no # 设置第一次登录时不需要输入yes
+            - SCP_ARGS=-P 22 -o StrictHostKeyChecking=no
+            - BUILD_NAME=shop-admin
+            - APP_NAME=shop-admin
+            - TEST_SERVER=root@yt-01
+            - RUN_PATH=/data/go/project # 配置自己测试环境应用保存运行地址
+        commands:
+            - go build -o $BUILD_NAME
+    deploy:
+        image: drillster/drone-rsync
+        secrets: [ RSYNC_KEY ]
+        user: "www"
+        hosts: ["47.104.94.104"]
+        port: 22
+        key: $RSYNC_KEY
+        source: ./
+        target: /home/www/server/deploy/$BUILD_NAME
+        args: "--exclude-from '.git'"
+        delete: true
+        script:
+            - cd /home/www/server/deploy/$BUILD_NAME
+            - ls -alh
